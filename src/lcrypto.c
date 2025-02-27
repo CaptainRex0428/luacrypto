@@ -37,13 +37,6 @@
 
 LUACRYPTO_API int luaopen_crypto(lua_State *L);
 
-void luacrypto_init()
-{
-    OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, NULL);
-	OSSL_PROVIDER_load(NULL, "legacy");
-	OSSL_PROVIDER_load(NULL, "default");
-}
-
 #if LUA_VERSION_NUM >= 502
 
 static void luaL_register (lua_State *L, const char *libname, const luaL_Reg *l)
@@ -114,7 +107,7 @@ static int digest_fnew(lua_State *L)
 
 static int digest_clone(lua_State *L)
 {
-    EVP_MD_CTX *c = (EVP_MD_CTX *)luaL_checkudata(L, 1, LUACRYPTO_DIGESTNAME);
+    EVP_MD_CTX *c = EVP_MD_CTX_new();
     EVP_MD_CTX *d = digest_pnew(L);
     EVP_MD_CTX_init(d);
     if (!EVP_MD_CTX_copy_ex(d, c))
